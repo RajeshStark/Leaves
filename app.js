@@ -2,13 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
 const mongoose = require('mongoose')
-const { MongoClient } = require('mongodb');
 
 require("dotenv").config({ path: "config.env" });
 
 const uri = process.env.MONGO_URI; 
-const client = new MongoClient(uri);
-
 
 const app = express();
 
