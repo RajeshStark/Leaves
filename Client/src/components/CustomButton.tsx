@@ -7,14 +7,15 @@ import { AppThemeColor } from '../utilities/colors';
 type props = {
   title: string;
   onPress: () => void;
+  fullScreen? : boolean
 };
 
-export default function CustomButton({title, onPress}: props) {
+export default function CustomButton({title, onPress, fullScreen}: props) {
   return (
     <Pressable onPress={onPress}>
       <LinearGradient
       colors={[AppThemeColor, '#7367CB', '#7D55B0']}
-      style={styles.linearGradient}
+      style={[styles.linearGradient, {width : fullScreen ? width * 0.9 : width * 0.5}]}
       >
       <Text style={styles.buttonText}>{title}</Text>
     </LinearGradient>
@@ -26,8 +27,8 @@ const styles = StyleSheet.create({
   linearGradient: {
     padding: 15,
     margin: 20,
-    width: width * 0.5,
     borderRadius: 20,
+    overflow: 'hidden',
 
     shadowColor: '#000',
     shadowOffset: {

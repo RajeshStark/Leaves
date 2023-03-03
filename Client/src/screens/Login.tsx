@@ -8,26 +8,29 @@ import { mailformat } from '../utilities/constants';
 import axios from 'axios';
 import { BASE_URL } from '../services';
 
-export default function Login() {
+export default function Login({navigation}) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const Login = () => {
+    navigation.navigate('home')
+    return
     if(!mailformat.test(email)){
       Alert.alert('Please enter correct email')
     } else if(password == "" || password.length < 6){
       Alert.alert('Please enter password atleast 6 digits')
     } else{
       const body = {
-        "email": "sangapogurajesh@gmail.com",
-        "password": "Beunique@686"
+        "email": email,
+        "password": password
     
     }
       axios.post(BASE_URL + 'api/auth/signin', body)
       .then((res) => {
         if(res.status === 200){
           console.log(res.data);
+
         } else{
           Alert.alert(res.data)
         }

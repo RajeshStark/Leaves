@@ -19,6 +19,10 @@ const User = mongoose.model(
       type: String, // String type
       default: 'user',
     },
+    token : {
+      type: String, // String type
+      required: true,
+    }
   })
 );
 

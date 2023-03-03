@@ -9,16 +9,19 @@ type props = {
     onChangeText : (txt: string) => void;
     right? : JSX.Element;
     left? : JSX.Element;
+    mywidth? : number
 }
 
-const CustomInput = ({label, value, onChangeText, right, left} : props) => {
+const CustomInput = ({label, value, onChangeText, right, left, mywidth} : props) => {
 
   return (
     <TextInput
       placeholder={label}
       value={value}
       onChangeText={onChangeText}
-      style={styles.txtinput}
+      style={[styles.txtinput, 
+        {width : typeof(mywidth) !== 'undefined' ? width * mywidth : width * 0.9,}
+      ]}
       mode={'flat'}
       textColor={'grey'}
       cursorColor={'grey'}
@@ -34,7 +37,6 @@ export default CustomInput;
 
 const styles = StyleSheet.create({
     txtinput: {
-        width: width * 0.9,
         color: '#FAF9F6',
         margin: 10, 
     },

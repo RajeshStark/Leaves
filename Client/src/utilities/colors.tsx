@@ -1,1 +1,6 @@
 export const AppThemeColor = "#6679E9"
+export const greywolf = "#504A4B"
+export const grey = "#E3E9ED"
+export const green = "#088F8F"
+export const yellow = "#FFBF00"
+export const red = "#FA553A"
