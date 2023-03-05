@@ -13,4 +13,5 @@ module.exports = function(app) {
 
   app.get("/api/leaves/getmyleaves", controller.getLeaves);
   app.post("/app/leaves/applyleave", controller.applyLeaves);
+  app.post("/app/leaves/approveorreject",controller.approveorreject);
 };

@@ -27,9 +27,13 @@ const Leave = mongoose.model(
       type: String, // String type
       required: true,
     },
-    token: {
+    email: {
       type: String,
       required: true
+    },
+    username: {
+      type: String, // String type
+      required: true,
     }
   })
 );
