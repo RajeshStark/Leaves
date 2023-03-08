@@ -1,7 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {createContext, useState, useContext, useEffect} from 'react';
-import {AuthData, authService} from '../services/authService';
+import React, {createContext, useState, useContext, useEffect, ChildContextProvider} from 'react';
 
+export type AuthData = {
+  token: string;
+  email: string;
+  name: string;
+};
 
 type AuthContextData = {
   authData?: AuthData;
