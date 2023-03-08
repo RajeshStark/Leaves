@@ -1,12 +1,40 @@
-import {View, Text, Image, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
-import React, {useState} from 'react';
+import {View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Pressable} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {height, width} from '../utilities/Dimensions';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {AppThemeColor, green, grey, greywolf, red, yellow} from '../utilities/colors';
+import {useAuth} from '../contexts/Auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home({navigation}) {
   const [active, setactive] = useState(0);
+
+  const auth = useAuth();
+  const signOut = () => {
+    auth.signOut();
+  };
+
+  useEffect(() => {
+    getMyData()
+  }, [])
+
+    const getMyData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@AuthData');
+      if (value !== null) {
+        // value previously stored
+        // setIsLoggedin(true);
+        const v = JSON.parse(value)
+        console.log({v});
+        
+      }
+      // setSplash(false);
+    } catch (e) {
+      // error reading value
+    }
+  };
+  
 
   const Arr = [
     {
@@ -55,6 +83,9 @@ const typeArr = ['All', 'Sick', 'Casual'];
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.subcontainer}>
+        <Pressable onPress={signOut}>
+        <Image source={require('../assets/logout.png')} style={styles.img} />
+        </Pressable>
         <Image source={require('../assets/bell.png')} style={styles.img} />
         <TouchableOpacity onPress={() => navigation.navigate('applyleave')} style={styles.iconContainer}>
           <Image
