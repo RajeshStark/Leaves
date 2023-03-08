@@ -5,7 +5,7 @@ import { StatusBar } from 'react-native';
 
 const App = () => {
   return (
-    <AuthProvider>
+    <AuthProvider> 
       <StatusBar backgroundColor={'#fff'} barStyle="dark-content"/>
       <Router />
     </AuthProvider>
