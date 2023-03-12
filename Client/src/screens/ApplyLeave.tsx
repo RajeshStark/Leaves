@@ -11,7 +11,7 @@ import {
   Alert,
   Button,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import {AppThemeColor, grey, greywolf} from '../utilities/colors';
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,6 +20,9 @@ import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import axios from 'axios';
+import {BASE_URL} from '../services/services';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type myprop = {
   selected: boolean;
@@ -30,6 +33,25 @@ export default function ApplyLeave({navigation}) {
   const [isSick, setIssick] = useState(false);
   const [cause, setCause] = useState('');
   const [mode, setMode] = useState('date');
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    getMyData();
+  }, []);
+
+  const getMyData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@AuthData');
+      if (value !== null) {
+        const v = JSON.parse(value);
+        console.log({v});
+        setUserData(v);
+      }
+    } catch (e) {
+      // error reading value
+      console.log(e, 'error in getitem in home');
+    }
+  };
 
   const [fromDate, setFromDate] = useState<myprop>({
     selected: false,
@@ -63,21 +85,8 @@ export default function ApplyLeave({navigation}) {
       fromDate.selected
         ? setFromDate({...fromDate, selected: false, date: d})
         : setToDate({...toDate, selected: false, date: d});
-      // setMode('date')
     }
-    // else {
-    //   const t = moment(mydate).format('LT')
-    //   fromDate.selected ? setFromDate({...fromDate,
-    //     selected : false ,
-    //     time: t
-    //   }) :
-    //   setToDate({...toDate,
-    //     selected : false ,
-    //     time: t
-    //   })
-    //   setMode('date')
     hideDatePicker();
-    // }
   };
 
   const Arr = [
@@ -114,13 +123,13 @@ export default function ApplyLeave({navigation}) {
 
   const diff = () => {
     const dif = moment(toDate.date).diff(moment(fromDate.date), 'days');
-    return `Apply for ${dif + 1} days leave`;
+
+    return `Apply for ${dif + 1} ${dif === 0 ? 'day' : 'days' } leave`;
   };
 
   // const markedDates = () => {
   //   const f = fromDate.date;
   //   const t = toDate.date
-
 
   //    const e = {f: {
   //       startingDay: true,
@@ -134,15 +143,49 @@ export default function ApplyLeave({navigation}) {
   //     }}
   //   return e
   // }
-const Apply = () => {
-  console.log({
-    'type' : isSick ? 'Sick' : 'Casual',
-    'Cause' : cause,
-    'from_date' : fromDate.date,
-    'to_date' : toDate.date
-  });
-  
-}
+  const Apply = () => {
+    if (cause == '') {
+      Alert.alert('Please enter reason to apply leave');
+    } else if (fromDate.date == '' || toDate.date == '') {
+      Alert.alert('Please enter date');
+    } else {
+      const body = {
+        from_date: fromDate.date,
+        to_date: toDate.date,
+        type: isSick ? 'Sick' : 'Casual',
+        status: 'Awaiting',
+        noofDays: diff(),
+        cause: cause,
+        username: userData.username,
+        email: userData.email,
+      };
+      axios
+        .post(BASE_URL + 'app/leaves/applyleave', body)
+        .then(res => {
+          console.log('158 ===> ', res);
+          if(res.status === 200){
+            Alert.alert(res.data.message);
+            navigation.goBack()
+          } 
+          // else{
+
+          // }
+          // Alert.alert(res.data.message)
+        })
+        .catch(err => {
+          let message =
+            typeof err.response !== 'undefined'
+              ? err.response.data.message
+              : err.message;
+          // console.warn("error", message);
+          console.log('error in getting leaves', message);
+          Alert.alert(message);
+          // if(err.includes('404')){
+          //   Alert.alert("No Leaves found")
+          // }
+        });
+    }
+  };
   return (
     <SafeAreaView
       style={{backgroundColor: '#fff', width: width, height: height}}>
@@ -194,7 +237,7 @@ const Apply = () => {
                 </Text>
               ) : index === 1 ? (
                 <CustomInput
-                  label={'Cause'}
+                  label={'Enter reason to apply leave'}
                   value={cause}
                   onChangeText={txt => setCause(txt)}
                   mywidth={0.7}
@@ -202,20 +245,20 @@ const Apply = () => {
               ) : index === 2 ? (
                 <Text
                   style={{color: '#504A4B', fontSize: 18, fontWeight: '900'}}>
-                  {
-                    fromDate.date !== "" ? 
-                    `${moment(fromDate.date).format('ll')} , ${moment(fromDate.date).format('dddd')}`
-                    : 'Please Enter From Date'
-                  }
+                  {fromDate.date !== ''
+                    ? `${moment(fromDate.date).format('ll')} , ${moment(
+                        fromDate.date,
+                      ).format('dddd')}`
+                    : 'Please Enter From Date'}
                 </Text>
               ) : (
                 <Text
                   style={{color: '#504A4B', fontSize: 18, fontWeight: '900'}}>
-                 {
-                    toDate.date !== "" ? 
-                    `${moment(toDate.date).format('ll')} , ${moment(toDate.date).format('dddd')}`
-                    : 'Please Enter To Date'
-                  }
+                  {toDate.date !== ''
+                    ? `${moment(toDate.date).format('ll')} , ${moment(
+                        toDate.date,
+                      ).format('dddd')}`
+                    : 'Please Enter To Date'}
                 </Text>
               )}
             </View>
@@ -227,7 +270,11 @@ const Apply = () => {
           markedDates={markedDates()}
         /> */}
 
-        <CustomButton title={diff()} onPress={() => Apply()} fullScreen={true} />
+        <CustomButton
+          title={diff()}
+          onPress={() => Apply()}
+          fullScreen={true}
+        />
       </ScrollView>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}

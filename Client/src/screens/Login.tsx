@@ -6,7 +6,7 @@ import CustomButton from '../components/CustomButton';
 import {AppThemeColor} from '../utilities/colors';
 import { mailformat } from '../utilities/constants';
 import axios from 'axios';
-import { BASE_URL } from '../services';
+import { BASE_URL } from '../services/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAuth} from '../contexts/Auth';
 
@@ -30,32 +30,20 @@ export default function Login({navigation}) {
       axios.post(BASE_URL + 'api/auth/signin', body)
       .then((res) => {
         if(res.status === 200){
-          console.log('res.data',res.data);
-          
           auth.signIn(res.data)
         } else{
           console.log("32",res.data);
+          Alert.alert("", "Something went wrong")
         }
       }).catch((err) =>{
         console.log(err);
         if(err[0].includes('401')){
           Alert.alert("",err.response.data.message)
         }
-        
       })
     }
   }
-
-  const storeData = async (value : object) => {
-    try {
-      const jsonValue = JSON.stringify(value)
-      await AsyncStorage.setItem('usertoken', jsonValue)
-    } catch (e) {
-      // saving error
-      console.log("login storedata",e);
-      
-    }
-  }
+  
   return (
     <SafeAreaView style={styles.container}>
       <Image source={require('../assets/leave.jpg')} style={styles.img} />

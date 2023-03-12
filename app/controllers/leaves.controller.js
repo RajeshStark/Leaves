@@ -15,7 +15,8 @@ function extractToken(req) {
 }
 
 exports.getLeaves = (req, res) => {
-  if (req.body.role === "admin") {
+
+  if (req.query.role === "admin") {
     Leave.find().exec((err, leave) => {
       if (err) {
         res.status(500).send({ message: err });
@@ -30,7 +31,7 @@ exports.getLeaves = (req, res) => {
   } else {
     Leave.find(
       {
-        email: req.body.email,
+        email: req.query.email,
       },
       {
         _id: 0,
@@ -46,7 +47,6 @@ exports.getLeaves = (req, res) => {
       if (leave.length === 0) {
         return res.status(404).send({ message: "No leaves found" });
       }
-
       res.status(200).send(leave);
     });
   }

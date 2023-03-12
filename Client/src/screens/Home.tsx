@@ -1,4 +1,4 @@
-import {View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Pressable} from 'react-native';
+import {View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Pressable, Alert} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {height, width} from '../utilities/Dimensions';
@@ -6,9 +6,18 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {AppThemeColor, green, grey, greywolf, red, yellow} from '../utilities/colors';
 import {useAuth} from '../contexts/Auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { BASE_URL } from '../services/services';
 
+type usertype = {
+  username : string;
+  email: string;
+  roles: string;
+  token: string
+}
 export default function Home({navigation}) {
   const [active, setactive] = useState(0);
+  const [userData, setUserData] = useState({})
 
   const auth = useAuth();
   const signOut = () => {
@@ -23,18 +32,41 @@ export default function Home({navigation}) {
     try {
       const value = await AsyncStorage.getItem('@AuthData');
       if (value !== null) {
-        // value previously stored
-        // setIsLoggedin(true);
         const v = JSON.parse(value)
         console.log({v});
-        
+        setUserData(v)
+        getLeaves(v)
       }
-      // setSplash(false);
     } catch (e) {
       // error reading value
+      console.log(e, 'error in getitem in home');
+      
     }
   };
   
+  const getLeaves = (v :usertype) =>{
+    const body = {
+      "email": v.email
+  }
+  console.log(body);
+  
+  // return
+    axios.get(BASE_URL+ 'api/leaves/getmyleaves')
+    .then((res)=> {
+console.log("53 ===> ",res.data);
+
+    })
+    .catch((err) =>{
+      let message = typeof err.response !== "undefined" ? err.response.data.message : err.message;
+      // console.warn("error", message);
+      console.log("error in getting leaves", message);
+      Alert.alert(message)
+      // if(err.includes('404')){
+      //   Alert.alert("No Leaves found")
+      // }
+     
+    })
+  }
 
   const Arr = [
     {
@@ -86,7 +118,7 @@ const typeArr = ['All', 'Sick', 'Casual'];
         <Pressable onPress={signOut}>
         <Image source={require('../assets/logout.png')} style={styles.img} />
         </Pressable>
-        <Image source={require('../assets/bell.png')} style={styles.img} />
+        {/* <Image source={require('../assets/bell.png')} style={styles.img} /> */}
         <TouchableOpacity onPress={() => navigation.navigate('applyleave')} style={styles.iconContainer}>
           <Image
             source={require('../assets/plus.png')}
@@ -94,8 +126,9 @@ const typeArr = ['All', 'Sick', 'Casual'];
           />
         </TouchableOpacity>
       </View>
-
+      <Text>{JSON.stringify(userData)}</Text>
       <Text style={styles.headertxt}> Leaves </Text>
+      <Text style={[styles.txt, {marginLeft: 20}]}>{`Hi! ${userData.username}`}</Text>
 
       <View style={styles.touchcontainer}>
         {typeArr.map((i, index) => (
@@ -198,5 +231,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: width * 0.9,
     alignSelf: 'center'
-  }
+  },
 });
