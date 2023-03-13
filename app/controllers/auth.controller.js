@@ -45,7 +45,7 @@ exports.signin = (req, res) => {
       );
 
       if (!passwordIsValid) {
-        return res.status(401).send({ message: "Invalid Password!" });
+        return res.status(401).send({ message: "Incorrect Password!" });
       }
 
       var token = jwt.sign({ id: user.id }, config.secret, {

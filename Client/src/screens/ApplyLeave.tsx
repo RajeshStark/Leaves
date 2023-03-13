@@ -29,11 +29,30 @@ type myprop = {
   date: string | Date;
   time: string | Date;
 };
+
+type leavetype = {
+  from_date: string | Date;
+  to_date: string | Date;
+  type: string;
+  status: string;
+  noofDays: string;
+  cause: string;
+  username: string;
+  email: string;
+};
+
+type usertype = {
+  username: string;
+  email: string;
+  roles: string;
+  token: string;
+};
+
 export default function ApplyLeave({navigation}) {
   const [isSick, setIssick] = useState(false);
   const [cause, setCause] = useState('');
   const [mode, setMode] = useState('date');
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState<usertype | any>();
 
   useEffect(() => {
     getMyData();
@@ -124,7 +143,7 @@ export default function ApplyLeave({navigation}) {
   const diff = () => {
     const dif = moment(toDate.date).diff(moment(fromDate.date), 'days');
 
-    return `Apply for ${dif + 1} ${dif === 0 ? 'day' : 'days' } leave`;
+    return `Applied for ${dif + 1} ${dif === 0 ? 'day' : 'days' } leave`;
   };
 
   // const markedDates = () => {
@@ -149,7 +168,7 @@ export default function ApplyLeave({navigation}) {
     } else if (fromDate.date == '' || toDate.date == '') {
       Alert.alert('Please enter date');
     } else {
-      const body = {
+      const body : leavetype = {
         from_date: fromDate.date,
         to_date: toDate.date,
         type: isSick ? 'Sick' : 'Casual',

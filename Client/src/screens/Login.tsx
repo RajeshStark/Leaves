@@ -23,7 +23,7 @@ export default function Login({navigation}) {
       Alert.alert("",'Please enter password atleast 6 digits')
     } else{
       const body = {
-        "email": email,
+        "email": email.toLowerCase(),
         "password": password
     
     }
@@ -36,10 +36,11 @@ export default function Login({navigation}) {
           Alert.alert("", "Something went wrong")
         }
       }).catch((err) =>{
-        console.log(err);
-        if(err[0].includes('401')){
-          Alert.alert("",err.response.data.message)
-        }
+        let message =
+          typeof err.response !== 'undefined'
+            ? err.response.data.message
+            : err.message;
+        Alert.alert(message)
       })
     }
   }
