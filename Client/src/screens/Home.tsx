@@ -52,6 +52,7 @@ export default function Home({navigation}) {
   const [userData, setUserData] = useState<usertype | any>({});
   const [leavesdata, setLeavesdata] = useState([]);
   const [greetings, setGreetings] = useState('');
+  const [refreshing, setRefreshing] = useState(false)
 
   const auth = useAuth();
   const signOut = () => {
@@ -84,6 +85,7 @@ export default function Home({navigation}) {
         console.log({v});
         setUserData(v);
         getLeaves(v);
+
       }
     } catch (e) {
       // error reading value
@@ -121,6 +123,7 @@ export default function Home({navigation}) {
         if (res.status === 200) {
           setLeavesdata(res.data);
         }
+        
       })
       .catch(err => {
         let message =
@@ -129,6 +132,7 @@ export default function Home({navigation}) {
             : err.message;
         Alert.alert(message);
       });
+      setRefreshing(false)
   };
 
   const typeArr = ['All', 'Sick', 'Casual'];
@@ -145,7 +149,7 @@ export default function Home({navigation}) {
   const adminRender = (item: any) => {
     return (
       <>
-        <TouchableOpacity style={styles.flatlisttouchable}>
+        <View style={styles.flatlisttouchable}>
           <Text style={{fontSize: 16, margin: 5, color: greywolf}}>
             {item.username} ({item.email}) has been {item.noofDays} .
           </Text>
@@ -209,7 +213,7 @@ export default function Home({navigation}) {
           :
           <Text style={{fontSize: 18, fontWeight: '800', alignSelf:'center',color: item.status === 'Approved' ? green : item.status === 'Rejected' ? red : yellow }}> You Have {item.status} Leave</Text>
           }
-        </TouchableOpacity>
+        </View>
       </>
     );
   };
@@ -217,7 +221,7 @@ export default function Home({navigation}) {
   const userRender = (item: any) => {
     return (
       <>
-        <TouchableOpacity style={styles.flatlisttouchable}>
+        <View style={styles.flatlisttouchable}>
           <View style={styles.viewcontainer}>
             <View>
               <Text
@@ -229,7 +233,7 @@ export default function Home({navigation}) {
                 }}>
                 {item.noofDays}
               </Text>
-              <Text style={{fontSize: 20, fontWeight: '700', margin: 3}}>
+              <Text style={{fontSize: 20, fontWeight: '700', margin: 3, color: '#000'}}>
                 {item.from_date == item.to_date
                   ? item.from_date
                   : `${item.from_date} - ${item.to_date}`}
@@ -266,7 +270,7 @@ export default function Home({navigation}) {
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </>
     );
   };
@@ -314,6 +318,9 @@ export default function Home({navigation}) {
         renderItem={({item}: ListRenderItem<string>) =>
           userData.roles === 'admin' ? adminRender(item) : userRender(item)
         }
+        onRefresh={() => getMyData()}
+  	    refreshing={refreshing}
+        keyExtractor={({item, index}) => (index)}
       />
     </SafeAreaView>
   );

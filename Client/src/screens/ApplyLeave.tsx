@@ -140,10 +140,10 @@ export default function ApplyLeave({navigation}) {
     index === 0 ? setIssick(!isSick) : showDatePicker(index);
   };
 
-  const diff = () => {
+  const diff = (t: boolean) => {
     const dif = moment(toDate.date).diff(moment(fromDate.date), 'days');
 
-    return `Applied for ${dif + 1} ${dif === 0 ? 'day' : 'days' } leave`;
+    return `${t ? 'Apply' : 'Applied'} for ${Number.isNaN(dif) ? 0 : dif + 1} ${dif === 0 ? 'day' : 'days' } leave`;
   };
 
   // const markedDates = () => {
@@ -290,7 +290,7 @@ export default function ApplyLeave({navigation}) {
         /> */}
 
         <CustomButton
-          title={diff()}
+          title={diff(true)}
           onPress={() => Apply()}
           fullScreen={true}
         />

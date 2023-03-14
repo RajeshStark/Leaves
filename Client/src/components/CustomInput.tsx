@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TextInput } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { width } from '../utilities/Dimensions';
+import { Image } from 'react-native';
 
 type props = {
     label: string;
@@ -9,10 +10,11 @@ type props = {
     onChangeText : (txt: string) => void;
     right? : JSX.Element;
     left? : JSX.Element;
-    mywidth? : number
+    mywidth? : number;
+    secureTextEntry? : boolean;
 }
 
-const CustomInput = ({label, value, onChangeText, right, left, mywidth} : props) => {
+const CustomInput = ({label, value, onChangeText, right, left, mywidth, secureTextEntry} : props) => {
 
   return (
     <TextInput
@@ -22,6 +24,7 @@ const CustomInput = ({label, value, onChangeText, right, left, mywidth} : props)
       style={[styles.txtinput, 
         {width : typeof(mywidth) !== 'undefined' ? width * mywidth : width * 0.9,}
       ]}
+      secureTextEntry={secureTextEntry}
       mode={'flat'}
       textColor={'grey'}
       cursorColor={'grey'}
